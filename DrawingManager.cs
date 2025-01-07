@@ -30,6 +30,11 @@ namespace MyWhite
             }
         }
 
+        public bool IsDrawing
+        {
+            get { return isDrawing; }
+        }
+
         public DrawingManager(int width, int height)
         {
             drawingBitmap = new Bitmap(width, height);

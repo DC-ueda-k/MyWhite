@@ -11,6 +11,7 @@ namespace MyWhite
         private DrawingManager drawingManager;
         private UndoRedoManager undoRedoManager;
         private SettingsManager settingsManager;
+        private Label pathLabel;
 
         public Form1()
         {
@@ -102,7 +103,7 @@ namespace MyWhite
             blackPenColorMenuItem.Checked = true;
 
             // Add path label  
-            Label pathLabel = new Label();
+            pathLabel = new Label();
             pathLabel.Location = new Point(10, menuStrip.Bottom + 10);
             pathLabel.AutoSize = true;
             this.Controls.Add(pathLabel);
