@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -8,39 +8,19 @@ namespace MyWhite
 {
     public partial class Form1 : Form
     {
-        private bool isDrawing = false;
-        private Point lastPoint = Point.Empty;
-        private Bitmap drawingBitmap;
-        private Graphics graphics;
-        private Stack<Bitmap> undoStack = new Stack<Bitmap>();
-        private Stack<Bitmap> redoStack = new Stack<Bitmap>();
-        private string screenshotSavePath = "";
-        private Label pathLabel;
-        private MenuStrip menuStrip;
-        private int selectedFontSize = 12; // デフォルトの文字サイズ  
-        private ToolStripMenuItem smallFontSizeMenuItem;
-        private ToolStripMenuItem mediumFontSizeMenuItem;
-        private ToolStripMenuItem largeFontSizeMenuItem;
-        private Color selectedFontColor = Color.Black; // デフォルトの文字色  
-        private ToolStripMenuItem blackColorMenuItem;
-        private ToolStripMenuItem redColorMenuItem;
-        private ToolStripMenuItem whiteColorMenuItem;
-        private int selectedPenWidth = 2; // デフォルトのペンの太さ  
-        private ToolStripMenuItem thinPenWidthMenuItem;
-        private ToolStripMenuItem mediumPenWidthMenuItem;
-        private ToolStripMenuItem thickPenWidthMenuItem;
-        private Color selectedPenColor = Color.Black; // デフォルトのペンの色  
-        private ToolStripMenuItem blackPenColorMenuItem;
-        private ToolStripMenuItem redPenColorMenuItem;
-        private ToolStripMenuItem whitePenColorMenuItem;
+        private DrawingManager drawingManager;
+        private UndoRedoManager undoRedoManager;
+        private SettingsManager settingsManager;
 
         public Form1()
         {
             InitializeComponent();
             this.DoubleBuffered = true;
-            this.drawingBitmap = new Bitmap(this.ClientSize.Width, this.ClientSize.Height);
-            this.graphics = Graphics.FromImage(this.drawingBitmap);
-            this.graphics.Clear(Color.White);
+
+            drawingManager = new DrawingManager(this.ClientSize.Width, this.ClientSize.Height);
+            undoRedoManager = new UndoRedoManager();
+            settingsManager = new SettingsManager();
+
             this.Paint += new PaintEventHandler(Form1_Paint);
             this.MouseDown += new MouseEventHandler(Form1_MouseDown);
             this.MouseMove += new MouseEventHandler(Form1_MouseMove);
@@ -52,7 +32,7 @@ namespace MyWhite
             this.KeyDown += new KeyEventHandler(Form1_KeyDown);
 
             // Add MenuStrip  
-            menuStrip = new MenuStrip();
+            MenuStrip menuStrip = new MenuStrip();
             this.MainMenuStrip = menuStrip;
             this.Controls.Add(menuStrip);
 
@@ -74,9 +54,9 @@ namespace MyWhite
             fontSettingsMenu.DropDownItems.Add(fontSizeMenu);
 
             // Add font size options  
-            smallFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "小", 12);
-            mediumFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "中", 16);
-            largeFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "大", 20);
+            ToolStripMenuItem smallFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "小", 12);
+            ToolStripMenuItem mediumFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "中", 16);
+            ToolStripMenuItem largeFontSizeMenuItem = AddFontSizeOption(fontSizeMenu, "大", 20);
 
             // Set default font size menu item checked  
             smallFontSizeMenuItem.Checked = true;
@@ -86,9 +66,9 @@ namespace MyWhite
             fontSettingsMenu.DropDownItems.Add(fontColorMenu);
 
             // Add font color options  
-            blackColorMenuItem = AddFontColorOption(fontColorMenu, "黒", Color.Black);
-            redColorMenuItem = AddFontColorOption(fontColorMenu, "赤", Color.Red);
-            whiteColorMenuItem = AddFontColorOption(fontColorMenu, "白", Color.White);
+            ToolStripMenuItem blackColorMenuItem = AddFontColorOption(fontColorMenu, "黒", Color.Black);
+            ToolStripMenuItem redColorMenuItem = AddFontColorOption(fontColorMenu, "赤", Color.Red);
+            ToolStripMenuItem whiteColorMenuItem = AddFontColorOption(fontColorMenu, "白", Color.White);
 
             // Set default font color menu item checked  
             blackColorMenuItem.Checked = true;
@@ -102,9 +82,9 @@ namespace MyWhite
             penSettingsMenu.DropDownItems.Add(penWidthMenu);
 
             // Add pen width options  
-            thinPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "細", 2);
-            mediumPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "中", 4);
-            thickPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "太", 6);
+            ToolStripMenuItem thinPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "細", 2);
+            ToolStripMenuItem mediumPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "中", 4);
+            ToolStripMenuItem thickPenWidthMenuItem = AddPenWidthOption(penWidthMenu, "太", 6);
 
             // Set default pen width menu item checked  
             thinPenWidthMenuItem.Checked = true;
@@ -114,21 +94,21 @@ namespace MyWhite
             penSettingsMenu.DropDownItems.Add(penColorMenu);
 
             // Add pen color options  
-            blackPenColorMenuItem = AddPenColorOption(penColorMenu, "黒", Color.Black);
-            redPenColorMenuItem = AddPenColorOption(penColorMenu, "赤", Color.Red);
-            whitePenColorMenuItem = AddPenColorOption(penColorMenu, "白", Color.White);
+            ToolStripMenuItem blackPenColorMenuItem = AddPenColorOption(penColorMenu, "黒", Color.Black);
+            ToolStripMenuItem redPenColorMenuItem = AddPenColorOption(penColorMenu, "赤", Color.Red);
+            ToolStripMenuItem whitePenColorMenuItem = AddPenColorOption(penColorMenu, "白", Color.White);
 
             // Set default pen color menu item checked  
             blackPenColorMenuItem.Checked = true;
 
             // Add path label  
-            pathLabel = new Label();
+            Label pathLabel = new Label();
             pathLabel.Location = new Point(10, menuStrip.Bottom + 10);
             pathLabel.AutoSize = true;
             this.Controls.Add(pathLabel);
 
             // Load saved settings  
-            LoadSettings();
+            settingsManager.LoadSettings();
             // Update path label with current save path  
             UpdatePathLabel();
         }
@@ -147,11 +127,12 @@ namespace MyWhite
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem != null)
             {
-                selectedFontSize = (int)menuItem.Tag;
+                drawingManager.SelectedFontSize = (int)menuItem.Tag;
                 // Uncheck all font size menu items  
-                smallFontSizeMenuItem.Checked = false;
-                mediumFontSizeMenuItem.Checked = false;
-                largeFontSizeMenuItem.Checked = false;
+                foreach (ToolStripMenuItem item in menuItem.GetCurrentParent().Items)
+                {
+                    item.Checked = false;
+                }
                 // Check the selected font size menu item  
                 menuItem.Checked = true;
             }
@@ -171,11 +152,12 @@ namespace MyWhite
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem != null)
             {
-                selectedFontColor = (Color)menuItem.Tag;
+                drawingManager.SelectedFontColor = (Color)menuItem.Tag;
                 // Uncheck all font color menu items  
-                blackColorMenuItem.Checked = false;
-                redColorMenuItem.Checked = false;
-                whiteColorMenuItem.Checked = false;
+                foreach (ToolStripMenuItem item in menuItem.GetCurrentParent().Items)
+                {
+                    item.Checked = false;
+                }
                 // Check the selected font color menu item  
                 menuItem.Checked = true;
             }
@@ -195,11 +177,12 @@ namespace MyWhite
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem != null)
             {
-                selectedPenWidth = (int)menuItem.Tag;
+                drawingManager.SelectedPenWidth = (int)menuItem.Tag;
                 // Uncheck all pen width menu items  
-                thinPenWidthMenuItem.Checked = false;
-                mediumPenWidthMenuItem.Checked = false;
-                thickPenWidthMenuItem.Checked = false;
+                foreach (ToolStripMenuItem item in menuItem.GetCurrentParent().Items)
+                {
+                    item.Checked = false;
+                }
                 // Check the selected pen width menu item  
                 menuItem.Checked = true;
             }
@@ -219,11 +202,12 @@ namespace MyWhite
             ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
             if (menuItem != null)
             {
-                selectedPenColor = (Color)menuItem.Tag;
+                drawingManager.SelectedPenColor = (Color)menuItem.Tag;
                 // Uncheck all pen color menu items  
-                blackPenColorMenuItem.Checked = false;
-                redPenColorMenuItem.Checked = false;
-                whitePenColorMenuItem.Checked = false;
+                foreach (ToolStripMenuItem item in menuItem.GetCurrentParent().Items)
+                {
+                    item.Checked = false;
+                }
                 // Check the selected pen color menu item  
                 menuItem.Checked = true;
             }
@@ -231,28 +215,23 @@ namespace MyWhite
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImageUnscaled(this.drawingBitmap, Point.Empty);
+            e.Graphics.DrawImageUnscaled(drawingManager.DrawingBitmap, Point.Empty);
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                isDrawing = true;
-                lastPoint = e.Location;
-                SaveState();
+                drawingManager.StartDrawing(e.Location);
+                undoRedoManager.SaveState(drawingManager.DrawingBitmap);
             }
             else if (e.Button == MouseButtons.Right)
             {
-                SaveState();
+                undoRedoManager.SaveState(drawingManager.DrawingBitmap);
                 string text = Microsoft.VisualBasic.Interaction.InputBox("挿入する文字:", "文字挿入", "", e.X, e.Y);
                 if (!string.IsNullOrEmpty(text))
                 {
-                    using (Font font = new Font("Arial", selectedFontSize))
-                    using (Brush brush = new SolidBrush(selectedFontColor))
-                    {
-                        this.graphics.DrawString(text, font, brush, e.Location);
-                    }
+                    drawingManager.DrawText(text, e.Location);
                     this.Invalidate();
                 }
             }
@@ -260,13 +239,9 @@ namespace MyWhite
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDrawing && e.Button == MouseButtons.Left)
+            if (drawingManager.IsDrawing && e.Button == MouseButtons.Left)
             {
-                using (Pen pen = new Pen(selectedPenColor, selectedPenWidth))
-                {
-                    this.graphics.DrawLine(pen, lastPoint, e.Location);
-                }
-                lastPoint = e.Location;
+                drawingManager.DrawLine(e.Location);
                 this.Invalidate();
             }
         }
@@ -275,7 +250,7 @@ namespace MyWhite
         {
             if (e.Button == MouseButtons.Left)
             {
-                isDrawing = false;
+                drawingManager.StopDrawing();
             }
         }
 
@@ -283,12 +258,14 @@ namespace MyWhite
         {
             if (e.Control && e.KeyCode == Keys.Z)
             {
-                Undo();
+                drawingManager.DrawingBitmap = undoRedoManager.Undo(drawingManager.DrawingBitmap);
+                this.Invalidate();
                 e.SuppressKeyPress = true; // キーイベントを処理済みにする  
             }
             else if (e.Control && e.KeyCode == Keys.Y)
             {
-                Redo();
+                drawingManager.DrawingBitmap = undoRedoManager.Redo(drawingManager.DrawingBitmap);
+                this.Invalidate();
                 e.SuppressKeyPress = true; // キーイベントを処理済みにする  
             }
             else if (e.Control && e.KeyCode == Keys.S)
@@ -300,45 +277,8 @@ namespace MyWhite
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            if (this.ClientSize.Width > 0 && this.ClientSize.Height > 0)
-            {
-                Bitmap newBitmap = new Bitmap(this.ClientSize.Width, this.ClientSize.Height);
-                Graphics newGraphics = Graphics.FromImage(newBitmap);
-                newGraphics.Clear(Color.White);
-                newGraphics.DrawImage(this.drawingBitmap, new Rectangle(Point.Empty, newBitmap.Size));
-                this.drawingBitmap = newBitmap;
-                this.graphics = newGraphics;
-                this.Invalidate();
-            }
-        }
-
-        private void SaveState()
-        {
-            Bitmap bitmapCopy = new Bitmap(this.drawingBitmap);
-            undoStack.Push(bitmapCopy);
-            redoStack.Clear();  // 新しい操作が行われたらRedoスタックをクリア  
-        }
-
-        private void Undo()
-        {
-            if (undoStack.Count > 0)
-            {
-                redoStack.Push(new Bitmap(this.drawingBitmap));
-                this.drawingBitmap = undoStack.Pop();
-                this.graphics = Graphics.FromImage(this.drawingBitmap);
-                this.Invalidate();
-            }
-        }
-
-        private void Redo()
-        {
-            if (redoStack.Count > 0)
-            {
-                undoStack.Push(new Bitmap(this.drawingBitmap));
-                this.drawingBitmap = redoStack.Pop();
-                this.graphics = Graphics.FromImage(this.drawingBitmap);
-                this.Invalidate();
-            }
+            drawingManager.Resize(this.ClientSize.Width, this.ClientSize.Height);
+            this.Invalidate();
         }
 
         private void SettingsButton_Click(object sender, EventArgs e)
@@ -347,39 +287,28 @@ namespace MyWhite
             {
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    screenshotSavePath = dialog.SelectedPath;
-                    SaveSettings();
+                    settingsManager.ScreenshotSavePath = dialog.SelectedPath;
+                    settingsManager.SaveSettings();
                     UpdatePathLabel(); // Update label when path changes  
                 }
             }
         }
 
-        private void SaveSettings()
-        {
-            Properties.Settings.Default.ScreenshotSavePath = screenshotSavePath;
-            Properties.Settings.Default.Save();
-        }
-
-        private void LoadSettings()
-        {
-            screenshotSavePath = Properties.Settings.Default.ScreenshotSavePath;
-        }
-
         private void UpdatePathLabel()
         {
-            pathLabel.Text = string.IsNullOrEmpty(screenshotSavePath) ? "保存先が未設定です。設定メニューから保存先を設定してください。" : "";
+            pathLabel.Text = string.IsNullOrEmpty(settingsManager.ScreenshotSavePath) ? "保存先が未設定です。設定メニューから保存先を設定してください。" : "";
         }
 
         private void SaveScreenshot()
         {
-            if (string.IsNullOrEmpty(screenshotSavePath))
+            if (string.IsNullOrEmpty(settingsManager.ScreenshotSavePath))
             {
                 MessageBox.Show("スクリーンショットの保存先を設定してください。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             string filename = $"MyWhite_{DateTime.Now:yyyyMMdd_HHmmss}.png";
-            string filepath = Path.Combine(screenshotSavePath, filename);
-            drawingBitmap.Save(filepath, System.Drawing.Imaging.ImageFormat.Png);
+            string filepath = Path.Combine(settingsManager.ScreenshotSavePath, filename);
+            drawingManager.DrawingBitmap.Save(filepath, System.Drawing.Imaging.ImageFormat.Png);
             MessageBox.Show($"スクリーンショットが保存されました: {filepath}", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
