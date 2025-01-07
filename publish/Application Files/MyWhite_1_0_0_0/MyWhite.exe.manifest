@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="MyWhite.exe" version="1.0.0.0" publicKeyToken="a1bb21bbe51eabe0" language="neutral" processorArchitecture="msil" type="win32" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="MyWhite" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="MyWhite.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC マニフェスト オプション
+          Windows のユーザー アカウント制御のレベルを変更するには、
+          requestedExecutionLevel ノードを以下のいずれかで置換します。
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         下位互換性を保つためにファイルおよびレジストリの仮想化を使用する場合、
+         requestedExecutionLevel ノードを削除します。
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MyWhite.exe" size="10176">
+      <assemblyIdentity name="MyWhite" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>Ap1RULDESbvt8Dh/cP8fQCAMVHA0Nyo6LYWxxYsmPJE=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="MyWhite.exe.config" size="189">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>R+Wg8QGvQVHX8T0ta/qbhH1bXkqY0fRnS3wBV3J0bN8=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=GCI\10042000536" issuerKeyHash="5b5aa4ee791b88045ea82282133733e0a2fb0cb6" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>IeMWb31fbYSopx8hUfJHtYeZt/P/4As3d6BDseGbDlQ=</DigestValue></Reference></SignedInfo><SignatureValue>Ox0uxlulsoeSgkf9IeI59Na3/lR8a8SUg2aTR48FU4sZgdhrQivS+HqUUn6h2hcjRb8s6wcZWYP+iAR23c822P1wpAy59R+yeUHmOXF1dwefI8yn27zN6ftBKShoAyIQlfN96tOis0zebG02JB/dvDBu7Y1BcCwwPJG0uV7qh2U=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>0zMf6vUafkQd8f165Vi33wmoyUglKZ1tOyyoDAw3d0KNtd9jF2rA8kYcz7ccntDoV0IJhiregITRyH59hV/86agMXUf4tjShLR3wdQwttQLA7rZ2yJWQAuJ0CmIZ856R1Sym1Nr1FLuFx49f3q7Q8DsHs7PaxEG84oJPwaSZmhE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="540e9be1b143a077370be0fff3b79987b547f251211fa7a8846d5f7d6f16e321" Description="" Url=""><as:assemblyIdentity name="MyWhite.exe" version="1.0.0.0" publicKeyToken="a1bb21bbe51eabe0" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=GCI\10042000536</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>anXVHsf75TcpF/rddK7Vr7T9CTuV4As2/6Qia4EjnL0=</DigestValue></Reference></SignedInfo><SignatureValue>doak0+eyV10QLymLArBUB9aXXJ1RsiMpP3TuBDiDToWh752ibFYRLp+QZltPFQvp6uIusQBQLicncAcVYdrnJt+UVZqt5E/bZ8AIi1+i6t9G8AdqwAc6I1rVaQDE3KyhMBNsfltfMOesyLzouhwrRzxvOOgS3MX3fZc+XSvFtPM=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>0zMf6vUafkQd8f165Vi33wmoyUglKZ1tOyyoDAw3d0KNtd9jF2rA8kYcz7ccntDoV0IJhiregITRyH59hV/86agMXUf4tjShLR3wdQwttQLA7rZ2yJWQAuJ0CmIZ856R1Sym1Nr1FLuFx49f3q7Q8DsHs7PaxEG84oJPwaSZmhE=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB1TCCAT6gAwIBAgIQG18BiEXXqL5NhFgjP8hG0jANBgkqhkiG9w0BAQsFADApMScwJQYDVQQDHh4ARwBDAEkAXAAxADAAMAA0ADIAMAAwADAANQAzADYwHhcNMjQxMjI0MDU1NDIxWhcNMjUxMjI0MTE1NDIxWjApMScwJQYDVQQDHh4ARwBDAEkAXAAxADAAMAA0ADIAMAAwADAANQAzADYwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANMzH+r1Gn5EHfH9euVYt98JqMlIJSmdbTssqAwMN3dCjbXfYxdqwPJGHM+3HJ7Q6FdCCYYq3oCE0ch+fYVf/OmoDF1H+LY0oS0d8HUMLbUCwO62dsiVkALidApiGfOekdUsptTa9RS7hcePX96u0PA7B7Oz2sRBvOKCT8GkmZoRAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAvnQ2Y4ANlbMSQ5vsmMTf1txoKdOwQZDOp4TE/C7pB+cyHQryfLRFHKTiOacxGYC7EW7pINkzjU8id3kWrpIqRZw3KNy0NJ1kPO5gBxPoK/d7Fa92PtSsJTV/yectBwHFfG1GJC9Pig/rwH+ApHVu62xWuX2hxiTR/ixnH0XtBkE=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
